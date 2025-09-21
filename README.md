@@ -1,3 +1,9 @@
+Version at https://chromium.googlesource.com/chromium/src/+/refs/tags/142.0.7425.0
+
+```
+142.0.7425.0
+```
+
 # ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
 
 Chromium is an open-source browser project that aims to build a safer, faster,
