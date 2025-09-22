@@ -279,6 +279,8 @@ component("base") {
     "environment.cc",
     "environment.h",
     "export_template.h",
+    "fingerprint_reader.cc",
+    "fingerprint_reader.h",
     "feature_list.cc",
     "feature_list.h",
     "feature_visitor.h",

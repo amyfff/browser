@@ -54,6 +54,9 @@ const char kDisableLayerTreeHostMemoryPressure[] =
 // Controls the number of threads to use for raster tasks.
 const char kNumRasterThreads[] = "num-raster-threads";
 
+// Specifies the path to the fingerprint configuration file
+const char kFingerprint[] = "fingerprint";
+
 // Renders a border around compositor layers to help debug and study
 // layer compositing.
 const char kShowCompositedLayerBorders[] = "show-composited-layer-borders";

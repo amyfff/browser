@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chrome_browser_main.h"
+#include "base/fingerprint_reader.h"
 
 #include <memory>
 #include <string>
@@ -1522,6 +1523,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // and more directly Profile.CreateAndInitializeProfile.
   StartupProfileInfo profile_info = CreateInitialProfile(
       user_data_dir_, *base::CommandLine::ForCurrentProcess());
+
+  bool status = fingerprinting::core::InitializeFingerprintForTesting();
+  LOG(INFO) << "DEBUG: Fingerprint path from command line: " << status;
 
   if (profile_info.mode == StartupProfileMode::kError)
     return content::RESULT_CODE_NORMAL_EXIT;
