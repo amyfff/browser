@@ -16,19 +16,15 @@ struct COMPONENT_EXPORT(FINGERPRINTING_CORE) FingerprintConfig {
   base::Value::Dict data;              // Additional fingerprint data
 };
 
-// Retrieves and parses the fingerprint configuration from the command line
-// Uses the --fingerprint switch to specify the path to the configuration file
-// Returns empty string if no fingerprint file is specified
-std::string GetFingerprintFromCommandLine();
+// Initializes fingerprint configuration from specified file path
+// Returns true if successfully initialized, false otherwise
+bool COMPONENT_EXPORT(FINGERPRINTING_CORE) InitializeFingerprintForTesting(const std::string& file_path);
 
 // Reads and parses a fingerprint configuration file
 // Returns nullptr if the file cannot be read or parsed
 std::unique_ptr<FingerprintConfig> GetFingerprintFromFile(
     const std::string& file_path);
 
-COMPONENT_EXPORT(FINGERPRINTING_CORE) bool InitializeFingerprintForTesting();
-
 }  // namespace fingerprinting::core
-
 
 #endif  // BASE_FINGERPRINT_READER_H_

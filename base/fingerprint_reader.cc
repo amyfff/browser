@@ -10,18 +10,12 @@
 
 namespace fingerprinting::core {
 
-bool InitializeFingerprintForTesting() {
-    std::string fingerprint_path = GetFingerprintFromCommandLine();
-    if (fingerprint_path.empty()) {
-        LOG(INFO) << "No fingerprint configuration file specified.";
-        return false;
-    }
+bool InitializeFingerprintForTesting(const std::string& file_path) {
+    LOG(INFO) << "Attempting to load fingerprint from: " << file_path;
     
-    LOG(INFO) << "Attempting to load fingerprint from: " << fingerprint_path;
-    
-    auto fingerprint_config = GetFingerprintFromFile(fingerprint_path);
+    auto fingerprint_config = GetFingerprintFromFile(file_path);
     if (!fingerprint_config) {
-        LOG(ERROR) << "Failed to load fingerprint configuration from file: " << fingerprint_path;
+        LOG(ERROR) << "Failed to load fingerprint configuration from file: " << file_path;
         return false;
     }
     
@@ -34,47 +28,26 @@ bool InitializeFingerprintForTesting() {
     return true;
 }
 
-std::string GetFingerprintFromCommandLine() {
-    const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    
-    // Check if the --fingerprint switch is present
-    if (!command_line->HasSwitch("fingerprint")) {
-        LOG(INFO) << "No fingerprint configuration file specified.";
-        return std::string();
-    }
-
-    // Get the file path from the switch value
-    std::string file_path = command_line->GetSwitchValueASCII("fingerprint");
-    if (file_path.empty()) {
-        LOG(ERROR) << "Empty fingerprint configuration file path provided.";
-        return std::string();
-    }
-
-    return file_path;
-}
-
 std::unique_ptr<FingerprintConfig> GetFingerprintFromFile(
     const std::string& file_path) {
-    // Check for empty path
     if (file_path.empty()) {
         LOG(ERROR) << "Empty fingerprint file path provided";
         return nullptr;
     }
 
-    // Create FilePath object from UTF8 string
     base::FilePath file_path_obj = base::FilePath::FromUTF8Unsafe(file_path);
 
-    // Check if file exists and read its content
     std::string file_content;
     if (!base::ReadFileToString(file_path_obj, &file_content)) {
         LOG(ERROR) << "Failed reading: " << file_path;
         return nullptr;
     }
+    
     if (file_content.empty()) {
         LOG(ERROR) << "Fingerprint file is empty: " << file_path;
         return nullptr;
     }
-    // Parse JSON with base::JSONReader
+
     absl::optional<base::Value> parsed_json = base::JSONReader::Read(file_content);
     if (!parsed_json || !parsed_json->is_dict()) {
         LOG(ERROR) << "Invalid JSON in fingerprint file or not an object";
@@ -83,7 +56,6 @@ std::unique_ptr<FingerprintConfig> GetFingerprintFromFile(
 
     const base::Value::Dict& dict = parsed_json->GetDict();
 
-    // Validate required fields with specific error messages
     const std::string* mode = dict.FindString("fingerprint_mode");
     if (!mode) {
         LOG(ERROR) << "Missing required field: fingerprint_mode";
@@ -113,7 +85,6 @@ std::unique_ptr<FingerprintConfig> GetFingerprintFromFile(
               << "\n  ID: " << *id
               << "\n  Creation Time: " << *creation_time;
 
-    // Create and return the config
     auto config = std::make_unique<FingerprintConfig>();
     config->mode = *mode;
     config->id = *id;

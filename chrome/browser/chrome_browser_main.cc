@@ -1524,8 +1524,18 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   StartupProfileInfo profile_info = CreateInitialProfile(
       user_data_dir_, *base::CommandLine::ForCurrentProcess());
 
-  bool status = fingerprinting::core::InitializeFingerprintForTesting();
-  LOG(INFO) << "DEBUG: Fingerprint path from command line: " << status;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("fingerprint")) {
+    std::string fingerprint_path = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("fingerprint");
+    
+    if (!fingerprint_path.empty()) {
+        fingerprinting::core::InitializeFingerprintForTesting(fingerprint_path);
+        LOG(INFO) << "DEBUG: Fingerprint initialization status: ";
+    } else {
+        LOG(ERROR) << "Fingerprint switch present but no path provided.";
+    }
+  } else {
+      LOG(INFO) << "Fingerprint switch not present, skipping fingerprint initialization.";
+  }
 
   if (profile_info.mode == StartupProfileMode::kError)
     return content::RESULT_CODE_NORMAL_EXIT;
