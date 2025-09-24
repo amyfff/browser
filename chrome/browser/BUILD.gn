@@ -188,6 +188,8 @@ source_set("shell_integration") {
 # require many files from it. This makes linking more efficient.
 static_library("browser") {
   sources = [
+    "fingerprint_manager.cc",
+    "fingerprint_manager.h",
     "about_flags.cc",
     "accessibility/accessibility_labels_service.cc",
     "accessibility/accessibility_labels_service.h",

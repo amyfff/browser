@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chrome_browser_main.h"
-#include "base/fingerprint_reader.h"
+#include "fingerprint_manager.h"
 
 #include <memory>
 #include <string>
@@ -1525,16 +1525,16 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
       user_data_dir_, *base::CommandLine::ForCurrentProcess());
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("fingerprint")) {
-    std::string fingerprint_path = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("fingerprint");
-    
-    if (!fingerprint_path.empty()) {
-        fingerprinting::core::InitializeFingerprintForTesting(fingerprint_path);
-        LOG(INFO) << "DEBUG: Fingerprint initialization status: ";
-    } else {
-        LOG(ERROR) << "Fingerprint switch present but no path provided.";
+    std::string fingerprint_path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("fingerprint");
+
+    LOG(INFO) << "Fingerprint path: " << fingerprint_path;
+    auto* fm = fingerprinting::FingerprintManager::GetInstance();
+    if (!fm->Initialize(fingerprint_path)) {
+      LOG(ERROR) << "Failed to initialize fingerprint manager";
     }
   } else {
-      LOG(INFO) << "Fingerprint switch not present, skipping fingerprint initialization.";
+    LOG(INFO) << "Fingerprint switch not present, skipping fingerprint initialization.";
   }
 
   if (profile_info.mode == StartupProfileMode::kError)
