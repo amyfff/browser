@@ -25,6 +25,8 @@ public:
   bool LoadFromString(const std::string& json_string);
   bool IsEnabled(const std::string& key) const;
   const BasicInfo* GetConfig() const { return config_.get(); }
+  int GetCpuCores() const;
+  int GetDeviceMemory() const;
   
 private:
   FingerprintManager() = default;

@@ -115,4 +115,56 @@ bool FingerprintManager::IsEnabled(const std::string& key) const {
   return *flag;
 }
 
+int FingerprintManager::GetCpuCores() const {
+  if (!config_) {
+    LOG(ERROR) << "FingerprintManager not initialized!";
+    return 8;  // Default value if not initialized
+  }
+
+  const base::Value::Dict* hardware = config_->data.FindDict("hardware");
+  if (!hardware) {
+    LOG(WARNING) << "Hardware section not found in fingerprint data";
+    return 8;
+  }
+
+  const base::Value::Dict* cpu = hardware->FindDict("cpu");
+  if (!cpu) {
+    LOG(WARNING) << "CPU section not found in hardware data";
+    return 8;
+  }
+
+  bool mode = cpu->FindBool("mode").value_or(false);
+  if (!mode) {
+    return 8;  // Return default value when mode is false
+  }
+
+  return cpu->FindInt("cores").value_or(8);  // Return cores value or default 8 if not found
+}
+
+int FingerprintManager::GetDeviceMemory() const {
+  if (!config_) {
+    LOG(ERROR) << "FingerprintManager not initialized!";
+    return 8;  // Default value if not initialized
+  }
+
+  const base::Value::Dict* hardware = config_->data.FindDict("hardware");
+  if (!hardware) {
+    LOG(WARNING) << "Hardware section not found in fingerprint data";
+    return 8;
+  }
+
+  const base::Value::Dict* memory = hardware->FindDict("memory");
+  if (!memory) {
+    LOG(WARNING) << "Memory section not found in hardware data";
+    return 8;
+  }
+
+  bool mode = memory->FindBool("mode").value_or(false);
+  if (!mode) {
+    return 8;  // Return default value when mode is false
+  }
+
+  return memory->FindInt("device_memory").value_or(8);  // Return memory value or default 8 if not found
+}
+
 }  // namespace fingerprinting

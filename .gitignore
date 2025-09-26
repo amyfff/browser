@@ -32,6 +32,7 @@
 *_proto.xml
 *_proto_cpp.xml
 *~
+.roo
 !Android.mk
 .*.sw?
 .DS_Store
